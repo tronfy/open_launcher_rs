@@ -1,8 +1,5 @@
 use std::{
-    collections::HashMap,
-    error::Error,
-    path::PathBuf,
-    process::{Child, Command},
+    collections::HashMap, error::Error, os::windows::process::CommandExt, path::PathBuf, process::{Child, Command}
 };
 
 use tokio::{fs, sync::broadcast};
@@ -15,6 +12,8 @@ mod events;
 mod forge;
 mod libraries;
 mod utils;
+
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 /// The `Launcher` struct is the main struct of the package. It is used to configure and launch a Minecraft game.
 pub struct Launcher {
@@ -659,6 +658,7 @@ impl Launcher {
 
         // Command
         let mut command = Command::new(&self.java_executable);
+        command.creation_flags(CREATE_NO_WINDOW);
         command.args(final_args);
         command.current_dir(self.game_dir.clone());
 
